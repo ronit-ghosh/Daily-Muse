@@ -1,0 +1,15 @@
+{
+  "name": "@ronit-ghosh/daily-muse-common",
+  "version": "1.1.5",
+  "description": "This is a blog app validation common npm package",
+  "main": "dist/zod.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "zod": "^3.23.8"
+  }
+}
