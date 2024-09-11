@@ -7,6 +7,9 @@ export const signinValidation = z.object({
 
 export const signupValidation = z.object({
     username: z.string().min(3, { message: "Username length must be more than 3!" }),
+    firstname: z.string().min(3, { message: "Firstname length must be more than 3!" }),
+    lastname: z.string().min(3, { message: "Lastname length must be more than 3!" }),
+    bio: z.string().min(10, { message: "Bio length must be more than 10!" }),
     email: z.string().email({ message: "The email format is wrong!" }),
     password: z.string().min(8, { message: "Password length must be more than 8!" }),
 });
