@@ -7,7 +7,7 @@
   "dependencies": {
     "@prisma/client": "^5.19.0",
     "@prisma/extension-accelerate": "^1.1.0",
-    "@ronit-ghosh/daily-muse-common": "^1.1.5",
+    "@ronit-ghosh/daily-muse-common": "^1.4.0",
     "@types/bcrypt": "^5.0.2",
     "bcrypt-ts": "^5.0.2",
     "hono": "^4.5.9",

@@ -21,27 +21,36 @@ signinRoute.post('/', async (c) => {
         const body = await c.req.json();
         const { email, password } = body;
 
+        if (!email || !password) {
+            c.status(422);
+            return c.json({ msg: "Inputs cannot be Empty!" });
+        }
+
         const parsedvalue = signinValidation.safeParse({ email, password });
         const signinValidationError = parsedvalue.error?.issues[0].message;
         if (!parsedvalue.success) {
-            return c.json({ msg: signinValidationError })
+            c.status(422);
+            return c.json({ msg: signinValidationError });
         }
 
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (!existingUser) {
+            c.status(409);
             return c.json({ msg: "User does not Exists, Please Signup First!" });
         }
 
         const hashedPassword = existingUser.password;
         const passwordMatched = compareSync(password, hashedPassword);
         if (!passwordMatched) {
+            c.status(401);
             return c.json({ msg: "Password is Incorrect!" });
         }
 
         const token = await sign({ id: existingUser.id }, c.env.JWT_SECRET);
 
-        return c.json({ msg: "Logged in Successfully", token });
+        return c.json({ msg: "Logged in Successfully", token, username: existingUser.username });
     } catch (error) {
+        c.status(400);
         return c.json({ error });
     }
 });

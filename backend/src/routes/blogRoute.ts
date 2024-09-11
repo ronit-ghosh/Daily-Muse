@@ -19,18 +19,73 @@ blogRoute.get('/bulk', async (c) => {
         datasourceUrl: c.env.DATABASE_URL
     }).$extends(withAccelerate());
 
+    const page = parseInt(c.req.query('page') || '1', 10)
+    const limit = parseInt(c.req.query('limit') || '5', 10)
+    const exclude = (page - 1) * limit
+    const totalBlogs = await prisma.post.count();
     try {
-        const allBlogs = await prisma.post.findMany();
-
-        const blogs = allBlogs.map(blog => {
-            return {
-                title: blog.title,
-                content: blog.content,
+        const allBlogs = await prisma.post.findMany({
+            skip: exclude,
+            take: limit,
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                created: true,
+                User: {
+                    select: {
+                        firstname: true,
+                        lastname: true,
+                        username: true,
+                    }
+                }
             }
         });
 
-        return c.json({ msg: "All blogs fetched", blogs });
+        const blogs = allBlogs.map(blog => {
+            return {
+                id: blog.id,
+                title: blog.title,
+                content: blog.content.split(' ').slice(0, 100).join(' '),
+                created: blog.created,
+                authorDetails: blog.User
+            }
+        });
+        const blogCountPerReq = blogs.length
+
+        return c.json({ msg: "All blogs fetched", blogs, page, limit, totalBlogs, blogCountPerReq });
     } catch (error) {
+        c.status(400); 
+        return c.json({ error });
+    }
+});
+
+blogRoute.get('/:id', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL
+    }).$extends(withAccelerate());
+
+    try {
+        const id = c.req.param('id');
+        const blog = await prisma.post.findFirst({
+            where: { id },
+            select: {
+                title: true,
+                content: true,
+                created: true,
+                User: {
+                    select: {
+                        firstname: true,
+                        lastname: true,
+                        username: true,
+                        bio: true,
+                    }
+                }
+            }
+        });
+        return c.json({ msg: "Blog fetched", blog });
+    } catch (error) {
+        c.status(400); 
         return c.json({ error });
     }
 });
@@ -38,6 +93,7 @@ blogRoute.get('/bulk', async (c) => {
 blogRoute.use('/*', async (c, next) => {
     const authToken = c.req.header("authorization") || "";
     if (!authToken.startsWith('Bearer ') || authToken === "") {
+        c.status(401);
         return c.json({ msg: "Wrong Auth Headers!" });
     }
     const jwtToken = authToken.split(' ')[1];
@@ -45,6 +101,7 @@ blogRoute.use('/*', async (c, next) => {
     try {
         const verifiedToken = await verify(jwtToken, c.env.JWT_SECRET);
         if (!verifiedToken) {
+            c.status(401);
             return c.json({ msg: "You are not Authenticated!" });
         }
 
@@ -53,6 +110,7 @@ blogRoute.use('/*', async (c, next) => {
         await next();
         return c.json({ msg: "You are Authenticated" });
     } catch (error) {
+        c.status(400);
         c.json({ error });
     }
 });
@@ -67,8 +125,14 @@ blogRoute.post('/', async (c) => {
         const { title, content } = body;
         const userId = c.get('userId')
 
+        if (!title || !content) {
+            c.status(400);
+            return c.json({ msg: "Title / Content Cannot be Empty" });
+        }
+
         const parsedvalue = createBlogValidation.safeParse({ title, content });
         if (!parsedvalue.success) {
+            c.status(401);
             return c.json({ msg: "Wrong Inputs!" })
         }
 
@@ -78,6 +142,7 @@ blogRoute.post('/', async (c) => {
 
         return c.json({ msg: "Blog Posted!", id: blog.id });
     } catch (error) {
+        c.status(400);
         return c.json({ error });
     }
 });
@@ -91,8 +156,14 @@ blogRoute.put('/', async (c) => {
         const body = await c.req.json();
         const { id, title, content } = body;
 
+        if (!title || !content) {
+            c.status(400);
+            return c.json({ msg: "Title / Content Cannot be Empty" });
+        }
+
         const parsedvalue = updateBlogValidation.safeParse({ id, title, content });
         if (!parsedvalue.success) {
+            c.status(401);
             return c.json({ msg: "Wrong Inputs!" })
         }
 
@@ -103,22 +174,7 @@ blogRoute.put('/', async (c) => {
 
         return c.json({ msg: "Blog Updated!", id: blog.id });
     } catch (error) {
-        return c.json({ error });
-    }
-});
-
-blogRoute.get('/:id', async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL
-    }).$extends(withAccelerate());
-
-    try {
-        const id = c.req.param('id');
-        const blog = await prisma.post.findFirst({
-            where: { id },
-        });
-        return c.json({ msg: "Blog fetched", title: blog?.title, content: blog?.content });
-    } catch (error) {
+        c.status(400);
         return c.json({ error });
     }
 });

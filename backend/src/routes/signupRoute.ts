@@ -19,30 +19,45 @@ signupRoute.post('/', async (c) => {
     }).$extends(withAccelerate());
     try {
         const body = await c.req.json();
-        const { username, email, password } = body;
+        const { username, firstname, lastname, bio, email, password } = body
 
-        const parsedvalue = signupValidation.safeParse({ username, email, password });
+        if (!username || !firstname || !lastname || !bio || !email || !password) {
+            c.status(422)
+            return c.json({ msg: "Inputs cannot be Empty!" })
+        }
+
+        const parsedvalue = signupValidation.safeParse({ username, firstname, lastname, bio, email, password });
         const signupValidationError = parsedvalue.error?.issues[0].message;
         if (!parsedvalue.success) {
+            c.status(422)
             return c.json({ msg: signupValidationError });
         }
 
-        const existingUser = await prisma.user.findFirst({ where: { email } });
+        const existingUser = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email },
+                    { username }
+                ]
+            }
+        });
         if (existingUser) {
-            return c.json({ msg: "This Email Already Exists, Please Login!" });
+            c.status(409)
+            return c.json({ msg: "This Email/Username Already Exists, Please Login!" });
         }
 
         const salt = genSaltSync(11);
         const hashedPassword = hashSync(password, salt);
 
         const user = await prisma.user.create({
-            data: { username, email, password: hashedPassword }
+            data: { username, firstname, lastname, bio, email, password: hashedPassword }
         });
 
         const token = await sign({ id: user.id }, c.env.JWT_SECRET);
 
-        return c.json({ msg: "User Created Successfully", token });
+        return c.json({ msg: "User Created Successfully", token, username });
     } catch (error) {
+        c.status(400)
         return c.json({ error });
     }
 });
