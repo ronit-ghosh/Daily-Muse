@@ -1,16 +1,21 @@
-import { Hono } from 'hono';
-import mainRoute from './routes/mainRoute';
-import { cors } from 'hono/cors';
+import { Hono } from "hono";
+import mainRoute from "./routes/mainRoute";
+import { cors } from "hono/cors";
 
 const app = new Hono();
 
-app.use('/*', cors({
+app.use(
+  "/*",
+  cors({
     origin: "http://localhost:5173",
-    allowMethods: ['GET', 'POST', 'PUT']
-}))
+    allowMethods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
-app.get('/', (c) => { return c.text('Hi There!'); });
+app.get("/", (c) => {
+  return c.text("Hi There!");
+});
 
-app.route('/api/v1', mainRoute);
+app.route("/api/v1", mainRoute);
 
 export default app;
