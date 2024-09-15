@@ -9,7 +9,7 @@ import PrivateRoute from "./routes/PrivateRoute";
 import CreateBlogRoute from "./routes/CreateBlogRoute";
 import MyBlogs from "./pages/MyBlogs";
 import MyBlogRoute from "./routes/MyBlogRoute";
-import './app.css'
+import './App.css'
 
 function App() {
   return (
