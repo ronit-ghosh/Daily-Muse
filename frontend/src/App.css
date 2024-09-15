@@ -1,0 +1,20 @@
+button:active {
+  scale: 0.98;
+  transition: all ease-in-out 100ms;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #22c55e;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #199245;
+}
