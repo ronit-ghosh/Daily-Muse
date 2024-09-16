@@ -74,7 +74,7 @@ export const fetchUserBlogs = atomFamily({
     get: (username: string) => async () => {
       try {
         const token = localStorage.getItem('dailymuse')
-        const response = await axios.get(`${URL}/api/v1/blog/user/${username}`, { headers: { Authorization: `Bearer ${token}` } })
+        const response = await axios.get(`${URL}/api/v1/blog/user/blogs/${username}`, { headers: { Authorization: `Bearer ${token}` } })
         return response.data
       } catch (error) {
         if (isAxiosError(error)) {

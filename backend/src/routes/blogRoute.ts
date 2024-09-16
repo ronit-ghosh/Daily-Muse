@@ -171,18 +171,19 @@ blogRoute.post("/", async (c) => {
   }
 });
 
-blogRoute.get("/user/:username", async (c) => {
+blogRoute.get("/user/blogs/:username", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
 
-  const username = c.req.query("username");
+  const username =  c.req.param('username')
 
   try {
     const user = await prisma.user.findFirst({
       where: { username },
       select: { id: true },
     });
+    console.log(user)
     if (!user) {
       c.status(400);
       return c.json({ msg: "This username does not exists!" });
