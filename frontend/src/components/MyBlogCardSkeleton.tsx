@@ -1,7 +1,7 @@
 
 const MyBlogCardSkeleton = () => {
     return (
-        <div className="animate-pulse p-4 lg:w-1/3">
+        <div className="animate-pulse p-4 w-full lg:w-1/3">
             <div className="h-full bg-slate-100 px-8 pt-6 rounded-lg flex flex-col items-center">
                 <div className="bg-slate-300 w-40 h-3 rounded-md mb-4"></div>
                 <div className="bg-slate-300 w-full h-7 rounded-md"></div>

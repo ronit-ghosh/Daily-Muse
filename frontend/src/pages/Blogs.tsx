@@ -22,6 +22,7 @@ const Blogs = () => {
 
   return (
     <>
+    {/* <BlogCardSkeleton/> */}
       <Navbar />
       {loading
         ? Array.from({ length: blogsPerPage }).map((_, index) => (
