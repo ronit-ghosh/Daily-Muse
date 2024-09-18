@@ -19,7 +19,7 @@ const Blog = (props: BlogType) => {
           <div className="text-4xl font-extrabold mb-4 text-center">
             {title}
           </div>
-          <p className="text-sm text-right">
+          <p className="text-sm text-center">
             Posted on: {date} by @{username}
           </p>
           <h2 className="text-gray-900 font-medium title-font tracking-wider text-sm uppercase text-center">

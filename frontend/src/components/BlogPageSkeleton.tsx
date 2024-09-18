@@ -6,7 +6,7 @@ const BlogPageSkeleton = () => {
           <div className="animate-pulse">
             <div className="mb-2 bg-slate-300 w-full h-7 rounded-md"></div>
             <div className="mb-4 bg-slate-300 w-full h-7 rounded-md"></div>
-            <div className="mb-4 ml-auto bg-slate-300 w-1/3 h-5 rounded-md"></div>
+            <div className="mb-4 mx-auto bg-slate-300 w-1/3 h-5 rounded-md"></div>
             <div className="mx-auto bg-slate-300 w-1/5 h-5 rounded-md"></div>
             <div className="mx-auto bg-slate-300 w-1/4 h-5 rounded-md mt-2"></div>
             <span className="inline-block h-1 w-full rounded bg-slate-300 my-6"></span>

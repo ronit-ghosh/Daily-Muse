@@ -3,10 +3,13 @@ import useCheckAuth from "../hooks/useCheckAuth";
 import Navbar from "../components/Navbar";
 import MyBlogCardSkeleton from "../components/MyBlogCardSkeleton";
 import useFetchMyBlogs from "../hooks/useFetchMyBlogs";
+import { useNavigate } from "react-router-dom";
 
 const MyBlogs = () => {
     const { } = useCheckAuth();
-    const { loading, userBlogs } = useFetchMyBlogs()
+    const navigate = useNavigate();
+    const navigateToCreateBlog = () => navigate('/create')
+    const { loading, userBlogs } = useFetchMyBlogs();
 
     return (
         <>
@@ -21,12 +24,15 @@ const MyBlogs = () => {
                                     <MyBlogCardSkeleton />
                                     <MyBlogCardSkeleton />
                                 </> :
-                                userBlogs.map(blog => <MyBlogCard
-                                    key={blog.id}
-                                    blogId={blog.id}
-                                    title={blog.title}
-                                    content={blog.content}
-                                    timestamp={blog.created} />)
+                                userBlogs.length === 0 ?
+                                    <div className="w-full text-center">You haven't posted anything yet. Want to <span onClick={navigateToCreateBlog} className="underline underline-offset-1 cursor-pointer">Create a Blog?</span>
+                                    </div> :
+                                    userBlogs.map(blog => <MyBlogCard
+                                        key={blog.id}
+                                        blogId={blog.id}
+                                        title={blog.title}
+                                        content={blog.content}
+                                        timestamp={blog.created} />)
                         }
 
                     </div>
